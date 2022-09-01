@@ -1,7 +1,22 @@
+// Components
 import Wrapper from './components/Wrapper';
 import Screen from "./components/Screen";
 import ButtonBox from './components/ButtonBox';
 import Button from "./components/Button";
+
+// State
+import { useSelector, useDispatch } from "react-redux";
+import { 
+  // state variables - selectors
+  selectSign, 
+  selectNum, 
+  selectRes,
+  // actions
+  setSign,
+  setNum,
+  setRes,
+  reset
+} from "./features/calculatorSlice";
 
 const btnValues = [
   ["C", "+-", "%", "/"],
@@ -12,9 +27,111 @@ const btnValues = [
 ];
 
 const App = () => {
+
+  // state selection and dispatch
+  const sign = useSelector(selectSign);
+  const num = useSelector(selectNum);
+  const res = useSelector(selectRes);
+  const dispatch = useDispatch();
+
+  // click handlers
+  const numClickHandler = e => {
+    e.preventDefault();
+    const value = e.target.innerHTML;
+
+    if (num < 16) {
+      dispatch(setNum(
+        num === 0 && value === "0"
+          ? "0"
+          : num % 1 === 0
+          ? Number(num + value)
+          : num + value
+      ));
+      dispatch(
+        setRes(!sign ? 0 : res)
+      );
+    }
+  };
+
+  const commaClickHandler = e => {
+    e.preventDefault();
+    const value = e.target.innerHTML;
+
+    dispatch(
+      setNum(!num.toString().includes(".") ? num + value : num)
+    );
+  };
+
+  const signClickHandler = e => {
+    e.preventDefault();
+    const value = e.target.innerHTML;
+
+    dispatch(
+      setSign(value)
+    );
+
+    dispatch(
+      setRes(!res && num ? num : res)
+    );
+
+    dispatch(
+      setNum(0)
+    );
+  };
+
+  const equalsClickHandler = () => {
+    if (sign && num) {
+      const math = (a, b, sign) => {
+        return (
+          sign === "+"
+            ? a + b
+            : sign === "-"
+            ? a - b
+            : sign === "X"
+            ? a * b
+            : a / b
+        );
+      };
+
+      dispatch(
+        setRes(
+          num === "0" && sign === "/" 
+            ? "Can't divide by zero"
+            : math(Number(res), Number(num), Number(sign))
+            )
+      );
+
+      dispatch(
+        setSign("")
+      );
+
+      dispatch(
+        setNum(0)
+      );
+    }
+  };
+
+  const invertClickHandler = () => {
+    dispatch(
+      setNum(num ? num * -1 : 0)
+    );
+
+    dispatch(
+      setRes(num ? num * -1 : 0)
+    );
+
+    dispatch(
+      setSign("")
+    );
+  };
+
+  const resetClickHandler = () => {
+    dispatch(reset());
+  }
+
   return (
     <Wrapper>
-      <Screen value="0" />
+      <Screen value={num ? num : res} />
       <ButtonBox>
         {
           btnValues.flat().map((button, index) => {
