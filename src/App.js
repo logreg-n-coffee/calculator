@@ -18,6 +18,9 @@ import {
   reset
 } from "./features/calculatorSlice";
 
+// Formatting
+import { toLocaleString, removeSpaces } from './features/formatting';
+
 const btnValues = [
   ["C", "+-", "%", "/"],
   [7, 8, 9, "X"],
@@ -39,14 +42,16 @@ const App = () => {
     e.preventDefault();
     const value = e.target.innerHTML;
 
-    if (num < 16) {
-      dispatch(setNum(
-        num === 0 && value === "0"
-          ? "0"
-          : num % 1 === 0
-          ? Number(num + value)
-          : num + value
-      ));
+    if (removeSpaces(num) < 16) {
+      dispatch(
+        setNum(
+          num === 0 && value === "0"
+            ? "0"
+            : removeSpaces(num) % 1 === 0
+            ? toLocaleString(Number(num + value))
+            : toLocaleString(num + value)
+        )
+      );
       dispatch(
         setRes(!sign ? 0 : res)
       );
@@ -97,7 +102,7 @@ const App = () => {
         setRes(
           num === "0" && sign === "/" 
             ? "Can't divide by zero"
-            : math(Number(res), Number(num), Number(sign))
+            : math(Number(removeSpaces(res)), Number(removeSpaces(num)), sign)
             )
       );
 
@@ -113,16 +118,30 @@ const App = () => {
 
   const invertClickHandler = () => {
     dispatch(
-      setNum(num ? num * -1 : 0)
+      setNum(num ? toLocaleString(removeSpaces(num)) * -1 : 0)
     );
 
     dispatch(
-      setRes(num ? num * -1 : 0)
+      setRes(num ? toLocaleString(removeSpaces(res)) * -1 : 0)
     );
 
     dispatch(
       setSign("")
     );
+  };
+
+  const percentClickHandler = () => {
+    let newNum = num ? parseFloat(removeSpaces(num)) : 0;
+    let newRes = res ? parseFloat(removeSpaces(res)) : 0;
+
+    dispatch(
+      setNum((newNum /= Math.pow(100, 1)))
+    );
+
+    dispatch(
+      setRes((newRes /= Math.pow(100, 1)))
+    );
+
   };
 
   const resetClickHandler = () => {
@@ -136,13 +155,28 @@ const App = () => {
         {
           btnValues.flat().map((button, index) => {
             return (
-              <Button 
+              <Button
                 key={index}
                 value={button}
                 className={button === "=" ? "equals" : ""}
-                onClick={() => {
-                  console.log(`${button} clicked`);
-                }}
+                onClick={
+                  button === "C"
+                    ? resetClickHandler
+                    : button === "+-"
+                    ? invertClickHandler
+                    : button === "%"
+                    ? percentClickHandler
+                    : button === "="
+                    ? equalsClickHandler
+                    : button === "/" ||
+                      button === "X" ||
+                      button === "-" ||
+                      button === "+"
+                    ? signClickHandler
+                    : button === "."
+                    ? commaClickHandler
+                    : numClickHandler
+                }
               />
             );
           })

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/tookit';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     sign: "",
