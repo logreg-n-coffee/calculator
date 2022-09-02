@@ -42,14 +42,14 @@ const App = () => {
     e.preventDefault();
     const value = e.target.innerHTML;
 
-    if (removeSpaces(num) < 16) {
+    if (removeSpaces(num).length < 16) {
       dispatch(
         setNum(
           num === 0 && value === "0"
             ? "0"
             : removeSpaces(num) % 1 === 0
-            ? toLocaleString(Number(num + value))
-            : toLocaleString(num + value)
+            ? Number(num + value)
+            : (num + value)
         )
       );
       dispatch(
@@ -118,11 +118,11 @@ const App = () => {
 
   const invertClickHandler = () => {
     dispatch(
-      setNum(num ? toLocaleString(removeSpaces(num)) * -1 : 0)
+      setNum(num ? removeSpaces(num) * -1 : 0)
     );
 
     dispatch(
-      setRes(num ? toLocaleString(removeSpaces(res)) * -1 : 0)
+      setRes(num ? removeSpaces(res) * -1 : 0)
     );
 
     dispatch(
