@@ -19,7 +19,7 @@ import {
 } from "./features/calculatorSlice";
 
 // Formatting
-import { toLocaleString, removeSpaces } from './features/formatting';
+import { removeSpaces } from './features/formatting';
 
 const btnValues = [
   ["C", "+-", "%", "/"],
