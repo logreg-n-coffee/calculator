@@ -7,9 +7,12 @@
   border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: left;
   color: white;
   font-weight: bold;
   box-sizing: border-box;
   font-size: 3em;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow-x: auto;
 }
